@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('employment_credentials', function (Blueprint $table) {
+        Schema::create('location_details', function (Blueprint $table) {
             $table->id();
+            $table->string('location')->nullable();
+            $table->time('startYear')->nullable();
+            $table->time('endYear')->nullable();
             $table->tinyInteger('user_id');
-            $table->string('position')->nullable();
-            $table->string('company')->nullable();
-            $table->date('start')->nullable();
-            $table->date('end')->nullable();
-            $table->integer('currentlyWorkHere')->nullable();
+            $table->tinyInteger('currentlyLive')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('employment_credentials');
+        Schema::dropIfExists('location_details');
     }
 };
