@@ -16,10 +16,12 @@ Route::prefix('profile')->group(function(){
     Route::post('/employment-credential', [ProfileController::class,'createEmploymentCredential'])->middleware('auth:sanctum');
     Route::post('/educational-credential', [ProfileController::class,'createEducationalCredential'])->middleware('auth:sanctum');
     Route::post('/location-detail', [ProfileController::class,'createLocationDetail'])->middleware('auth:sanctum');
+    Route::post('/upload-profile-photo', [ProfileController::class,'uploadProfilePhoto'])->middleware('auth:sanctum');
     Route::get('/credential-detail/{user_id}', [ProfileController::class,'getCredentialDetail'])->middleware('auth:sanctum');
 });
 
 
 Route::prefix('space')->group(function(){
     Route::post('/create-space', [SpaceController::class,'createSpace'])->middleware('auth:sanctum');
+    Route::get('/get-spaces',[SpaceController::class,'getAllSpaces'])->middleware('auth:sanctum');
 });

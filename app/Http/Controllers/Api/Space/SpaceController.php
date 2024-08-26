@@ -34,11 +34,31 @@ class SpaceController extends Controller
             'image' => $fileName
         ]);
 
-        Storage::put('public/images/uploaded' . $fileName, $imageData);
+        Storage::put('public/images/space/' . $fileName, $imageData);
         
         return response()->json([
             'message' => 'Space created successfully.',
             'fileName' => $fileName,
+            'response_code' => 200,
+        ]);
+    }
+
+    public function getAllSpaces(){
+        $spaces = SpaceModel::latest()->get();
+
+        $updatedSpaces = $spaces->map(function ($space) {
+            if ($space->image) {
+                // Add the 'url' field to the model
+                $space->url = env('APP_URL') . ':8000' . Storage::url('public/images/space/' . $space->image);
+            } else {
+                // Handle cases where there is no image
+                $space->url = null;
+            }
+            return $space;
+        });
+
+        return response()->json([
+            'spaces' => $updatedSpaces,
             'response_code' => 200,
         ]);
     }

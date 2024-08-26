@@ -8,6 +8,9 @@ use App\Models\Profile\EmploymentCredentials;
 use App\Models\Profile\EducationalCredentials;
 use App\Models\Profile\LocationDetail;
 use Carbon\Carbon;
+use App\Models\Profile\Profile;
+use Illuminate\Support\Facades\Storage;
+
 
 class ProfileController extends Controller
 {
@@ -69,14 +72,62 @@ class ProfileController extends Controller
         $educationalDetail = EducationalCredentials::where('user_id',$user_id)->first();
         $employmentDetail = EmploymentCredentials::where('user_id',$user_id)->first();
         $locationDetail = LocationDetail::where('user_id',$user_id)->first();
+        $profilePhoto = Profile::where('user_id',$user_id)->first();
+
+        $path = '/';
+        if($profilePhoto){
+            $path = 'public/images/uploaded/'.$profilePhoto->image;
+        }
 
         return response()->json([
             'response_code' => 200,
             'credentialDetail' => [
                 'employmentDetail'=> $employmentDetail,
                 'educationalDetail'=> $educationalDetail,
-                'locationDetail' => $locationDetail
+                'locationDetail' => $locationDetail,
+                'profilePhoto' => env('APP_URL').':8000'.Storage::url($path)
             ]
+        ]);
+    }
+
+    public function uploadProfilePhoto(Request $request){
+        // checks if image already exists
+        $image = Profile::where('user_id',$request->user_id)->first();
+
+        $path = '/';
+        if($image){
+            $path = 'public/images/uploaded/'.$image->image;
+        }
+        if(Storage::exists($path) && $image){
+            Storage::delete($path);
+            $image->delete();
+        }
+
+        // stores image
+        $imageData = $request->attachment['base64'];
+        if(preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)){
+            $imageData = substr($imageData, strpos($imageData, ',') + 1);
+            $type = strtolower($type[1]);
+        }else{
+            return response()->json(['error' => 'Invalid image data'], 422);
+        }
+
+        // Decode base64 string
+        $imageData = base64_decode($imageData);
+
+        $fileName = uniqid() . '.' . $type;
+
+
+        Profile::create([
+            'user_id' => $request->user_id,
+            'image' => $fileName
+        ]);
+        Storage::put('public/images/uploaded/' . $fileName, $imageData);
+        
+        return response()->json([
+            'message' => 'Profile photo created successfully.',
+            'fileName' => $fileName,
+            'response_code' => 200,
         ]);
     }
 }
