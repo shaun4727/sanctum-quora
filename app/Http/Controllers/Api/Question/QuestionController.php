@@ -42,4 +42,8 @@ class QuestionController extends Controller
             'questions' => $updatedSpaces
         ]);
     }
+
+    public function getAllQuestionsWthAnswers(){
+        return $questions = Question::with(['answers.user.profile'])->get();
+    }
 }
