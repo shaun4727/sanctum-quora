@@ -6,13 +6,25 @@ use App\Http\Controllers\Api\Profile\ProfileController;
 use App\Http\Controllers\Api\Space\SpaceController;
 use App\Http\Controllers\Api\Question\QuestionController;
 use App\Http\Controllers\Api\Answer\AnswerController;
+use App\Events\NotificationProcessed;
+use App\Http\Controllers\Api\Notification\NotificationController;
+use App\Models\User;
 
 
 // importing another api file
 require __DIR__.'/auth.php';
 
 Route::get('/user', function (Request $request) {
-    return $request->user()->makeHidden('email_token');
+    $user = $request->user()->makeHidden('email_token');
+    $spaces = User::find($user->id)->spaces;
+    $spaceIdList = array();
+
+    foreach($spaces as $space){
+        array_push($spaceIdList,$space->id);
+    }
+    $user->spaces = $spaceIdList;
+
+    return $user;
 })->middleware('auth:sanctum');
 
 Route::prefix('profile')->group(function(){
@@ -33,11 +45,20 @@ Route::prefix('space')->group(function(){
 Route::prefix('question')->group(function(){
     Route::post('/create-question', [QuestionController::class,'createQuestion'])->middleware('auth:sanctum');
     Route::get('/get-questions',[QuestionController::class,'getAllQuestions'])->middleware('auth:sanctum');
-    Route::get('/get-question-with-answers',[QuestionController::class,'getAllQuestionsWthAnswers'])->middleware('auth:sanctum');
+    Route::get('/get-question-with-answers/{space_id}',[QuestionController::class,'getAllQuestionsWthAnswers'])->middleware('auth:sanctum');
 });
 
 
 Route::prefix('answer')->group(function(){
     Route::post('/create-answer', [AnswerController::class,'createAnswer'])->middleware('auth:sanctum');
     Route::get('/get-answers',[AnswerController::class,'getAllAnswers'])->middleware('auth:sanctum');
+});
+
+Route::prefix('notification')->group(function(){
+    Route::get('/get-all-notification', [NotificationController::class,'getAllNotification'])->middleware('auth:sanctum');
+    Route::get('/get-all-answers/{question_id}/{notification_id}', [NotificationController::class,'getAllAnswers'])->middleware('auth:sanctum');
+});
+
+Route::get('/checking-channel', function(){
+    broadcast(new NotificationProcessed("Hello"));
 });

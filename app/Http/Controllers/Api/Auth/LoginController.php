@@ -20,6 +20,13 @@ class LoginController extends Controller
                 'data' => []
             ],401);
         }
+        $spaces = User::find($user->id)->spaces;
+        $spaceIdList = array();
+
+        foreach($spaces as $space){
+            array_push($spaceIdList,$space->id);
+        }
+        $user->spaces = $spaceIdList;
 
         $token = $user->createToken($user->email)->plainTextToken;
         return response()->json([

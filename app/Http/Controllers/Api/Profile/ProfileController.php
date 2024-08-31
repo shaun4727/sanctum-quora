@@ -74,9 +74,9 @@ class ProfileController extends Controller
         $locationDetail = LocationDetail::where('user_id',$user_id)->first();
         $profilePhoto = Profile::where('user_id',$user_id)->first();
 
-        $path = '/';
-        if($profilePhoto){
-            $path = 'public/images/uploaded/'.$profilePhoto->image;
+        $photo = null;
+        if(isset($profilePhoto->image)){
+            $photo = $profilePhoto->image;
         }
 
         return response()->json([
@@ -85,7 +85,7 @@ class ProfileController extends Controller
                 'employmentDetail'=> $employmentDetail,
                 'educationalDetail'=> $educationalDetail,
                 'locationDetail' => $locationDetail,
-                'profilePhoto' => env('APP_URL').':8000'.Storage::url($path)
+                'profilePhoto' => $photo
             ]
         ]);
     }

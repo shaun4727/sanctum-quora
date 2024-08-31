@@ -43,7 +43,13 @@ class QuestionController extends Controller
         ]);
     }
 
-    public function getAllQuestionsWthAnswers(){
-        return $questions = Question::with(['answers.user.profile'])->get();
+    public function getAllQuestionsWthAnswers($space_id){
+        $questions = Question::with(['answers.user.profile'])
+                    ->whereJsonContains('space_id',intval($space_id))->get();
+
+        return response()->json([
+            'response_code' => 200,
+            'questions' => $questions
+        ]);
     }
 }
