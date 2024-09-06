@@ -14,6 +14,7 @@ use App\Models\Notifications\Notifications;
 class AnswerController extends Controller
 {
     public function createAnswer(Request $request){
+       
 
         $answer = Answer::create([
             'user_id' => $request->user_id,

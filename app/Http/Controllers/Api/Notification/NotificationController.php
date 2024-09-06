@@ -7,21 +7,23 @@ use Illuminate\Http\Request;
 use App\Models\Notifications\Notifications;
 use App\Models\User;
 use App\Models\Question\Question;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
     public function getAllNotification(){
         $notifications = Notifications::all();
-        $spaces = User::find(1)->spaces;
+        $spaces = User::find(Auth::user()->id)->spaces;
         $spaceIdList = array();
         foreach($spaces as $space){
             array_push($spaceIdList,$space->id);
         }
         
         $notificationForUser = array();
-
+    
         foreach($notifications as $notification){
             $likedSpaceId = json_decode($notification->space_id,true);
+
             $isForUser = !empty(array_intersect($spaceIdList,$likedSpaceId));
 
             if($isForUser){

@@ -46,6 +46,8 @@ Route::prefix('question')->group(function(){
     Route::post('/create-question', [QuestionController::class,'createQuestion'])->middleware('auth:sanctum');
     Route::get('/get-questions',[QuestionController::class,'getAllQuestions'])->middleware('auth:sanctum');
     Route::get('/get-question-with-answers/{space_id}',[QuestionController::class,'getAllQuestionsWthAnswers'])->middleware('auth:sanctum');
+    Route::get('/get-single-question-detail/{question_id}/{answer_id}',[QuestionController::class,'getSingleQuestionsWthAnswers'])->middleware('auth:sanctum');
+    Route::get('/get-related-question',[QuestionController::class,'getRelatedQuestion'])->middleware('auth:sanctum');
 });
 
 
