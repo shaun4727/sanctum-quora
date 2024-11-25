@@ -15,20 +15,30 @@ use Illuminate\Support\Facades\Storage;
 class ProfileController extends Controller
 {
     public function createEmploymentCredential(Request $request){
+        $emCredential = EmploymentCredentials::where('user_id',$request->user_id)->first();
+        if(isset($emCredential)){
+            $emCredential->position = $request->position;
+            $emCredential->company = $request->company;
+            $emCredential->start = Carbon::parse($request->start)->format('Y-m-d');
+            $emCredential->end = $request->end?Carbon::parse($request->end)->format('Y-m-d'):null;
+            $emCredential->currentlyWorkHere = $request->currentlyWorkHere;
+            $emCredential->save();
+        }else{
+            $emCredential = EmploymentCredentials::create([
+                'user_id' => $request->user_id,
+                'position' => $request->position,
+                'company' => $request->company,
+                'start' => Carbon::parse($request->start)->format('Y-m-d'),
+                'end' => $request->end?Carbon::parse($request->end)->format('Y-m-d'):null,
+                'currentlyWorkHere' => $request->currentlyWorkHere
+            ]);
+        }
 
-        $empCrd = EmploymentCredentials::create([
-            'user_id' => $request->user_id,
-            'position' => $request->position,
-            'company' => $request->company,
-            'start' => Carbon::parse($request->start)->format('Y-m-d'),
-            'end' => Carbon::parse($request->end)->format('Y-m-d'),
-            'currentlyWorkHere' => $request->currentlyWorkHere
-        ]);
         
         return response()->json([
             'message' => 'Employment Credentials are successfully saved.',
             'response_code' => 200,
-            'EmploymentCredentials' => $empCrd
+            'EmploymentCredentials' => $emCredential
         ]);
     }
 

@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('space_models', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('user_id');
+            $table->json('user_id')->nullable();
             $table->string('name');
             $table->string('image');
+            $table->string('description');
             $table->timestamps();
         });
     }

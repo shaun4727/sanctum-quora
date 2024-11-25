@@ -22,42 +22,55 @@ class AnswerController extends Controller
             'answer' => $request->answer
         ]);
         
-        $lastNotification = Notifications::where('question_id',$request->question_id)->latest()->first();
+        // $lastNotification = Notifications::where('question_id',$request->question_id)->latest()->first();
 
 
 
 
 
-        if(isset($lastNotification)){
-            if($lastNotification->read == 1){
-                $notification = Notifications::create([
-                    'user_id' => $request->user_id,
-                    'question_id' => $request->question_id,
-                    'title' => $request->question,
-                    'answer_id' => $answer->id,
-                    'space_id' => json_encode($request->spaces),
-                    'read' => 0
-                ]);
+        // if(isset($lastNotification)){
+        //     if($lastNotification->read == 1){
+        //         $notification = Notifications::create([
+        //             'user_id' => $request->user_id,
+        //             'question_id' => $request->question_id,
+        //             'title' => $request->question,
+        //             'answer_id' => $answer->id,
+        //             'space_id' => json_encode($request->spaces),
+        //             'read' => 0
+        //         ]);
     
-                broadcast(new NotificationProcessed($notification));
-            }
-        }else{
-            $notification = Notifications::create([
-                'user_id' => $request->user_id,
-                'question_id' => $request->question_id,
-                'title' => $request->question,
-                'answer_id' => $answer->id,
-                'space_id' => json_encode($request->spaces),
-                'read' => 0
-            ]);
+        //         broadcast(new NotificationProcessed($notification));
+        //     }
+        // }else{
+        //     $notification = Notifications::create([
+        //         'user_id' => $request->user_id,
+        //         'question_id' => $request->question_id,
+        //         'title' => $request->question,
+        //         'answer_id' => $answer->id,
+        //         'space_id' => json_encode($request->spaces),
+        //         'read' => 0
+        //     ]);
 
-            broadcast(new NotificationProcessed($notification));
-        }
-
-
+        //     broadcast(new NotificationProcessed($notification));
+        // }
 
 
 
+
+        $notification = Notifications::create([
+            'user_id' => $request->user_id,
+            'question_id' => $request->question_id,
+            'title' => $request->question,
+            'answer_id' => $answer->id,
+            'space_id' => json_encode($request->spaces),
+            'read' => 0
+        ]);
+
+        $spaceIdList = array();
+        $spaceIdList = json_decode($notification->space_id, true);
+        $notification->setAttribute('space_id', $spaceIdList);
+
+        broadcast(new NotificationProcessed($notification));
 
         
 

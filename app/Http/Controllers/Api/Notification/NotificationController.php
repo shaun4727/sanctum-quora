@@ -7,13 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\Notifications\Notifications;
 use App\Models\User;
 use App\Models\Question\Question;
+use App\Models\Space\SpaceModel;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
     public function getAllNotification(){
         $notifications = Notifications::all();
-        $spaces = User::find(Auth::user()->id)->spaces;
+        $spaces = SpaceModel::whereJsonContains('user_id', Auth::id())->get();
         $spaceIdList = array();
         foreach($spaces as $space){
             array_push($spaceIdList,$space->id);
@@ -34,7 +35,7 @@ class NotificationController extends Controller
         return response()->json([
             'response_code' => 200,
             'all_notifications' => $notificationForUser
-        ],200);
+        ]);
        
     }
 

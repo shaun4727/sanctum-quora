@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Answer\AnswerController;
 use App\Events\NotificationProcessed;
 use App\Http\Controllers\Api\Notification\NotificationController;
 use App\Models\User;
+use App\Models\Space\SpaceModel;
 
 
 // importing another api file
@@ -16,7 +17,7 @@ require __DIR__.'/auth.php';
 
 Route::get('/user', function (Request $request) {
     $user = $request->user()->makeHidden('email_token');
-    $spaces = User::find($user->id)->spaces;
+    $spaces = SpaceModel::whereJsonContains('user_id', Auth::id())->get();
     $spaceIdList = array();
 
     foreach($spaces as $space){
@@ -39,6 +40,9 @@ Route::prefix('profile')->group(function(){
 Route::prefix('space')->group(function(){
     Route::post('/create-space', [SpaceController::class,'createSpace'])->middleware('auth:sanctum');
     Route::get('/get-spaces',[SpaceController::class,'getAllSpaces'])->middleware('auth:sanctum');
+    Route::get('/get-user-spaces',[SpaceController::class,'getAllSpacesForUser'])->middleware('auth:sanctum');
+    Route::get('/follow-space/{space_id}',[SpaceController::class,'updateSpace'])->middleware('auth:sanctum');
+    Route::get('/unfollow-space/{space_id}',[SpaceController::class,'removeUserFromSpace'])->middleware('auth:sanctum');
 });
 
 

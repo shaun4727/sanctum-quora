@@ -53,9 +53,6 @@ class User extends Authenticatable
         return $this->hasOne(Profile::class);
     }
 
-    public function spaces()
-    {
-        return $this->hasMany(SpaceModel::class);
-    }
+
 
 }
