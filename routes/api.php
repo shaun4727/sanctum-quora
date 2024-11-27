@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Profile\ProfileController;
 use App\Http\Controllers\Api\Space\SpaceController;
 use App\Http\Controllers\Api\Question\QuestionController;
 use App\Http\Controllers\Api\Answer\AnswerController;
+use App\Http\Controllers\Api\Vote\VoteController;
 use App\Events\NotificationProcessed;
 use App\Http\Controllers\Api\Notification\NotificationController;
 use App\Models\User;
@@ -58,6 +59,8 @@ Route::prefix('question')->group(function(){
 Route::prefix('answer')->group(function(){
     Route::post('/create-answer', [AnswerController::class,'createAnswer'])->middleware('auth:sanctum');
     Route::get('/get-answers',[AnswerController::class,'getAllAnswers'])->middleware('auth:sanctum');
+    Route::post('/answers/vote', [VoteController::class, 'saveVote'])->middleware('auth:sanctum');
+
 });
 
 Route::prefix('notification')->group(function(){

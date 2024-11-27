@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Str;
+use App\Models\Space\SpaceModel;
 
 class LoginController extends Controller
 {
@@ -20,7 +21,7 @@ class LoginController extends Controller
                 'data' => []
             ],401);
         }
-        $spaces = User::find($user->id)->spaces;
+        $spaces = SpaceModel::whereJsonContains('user_id', $user->id)->get();
         $spaceIdList = array();
 
         foreach($spaces as $space){

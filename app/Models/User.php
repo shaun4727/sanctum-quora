@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Profile\Profile;
 use App\Models\Space\SpaceModel;
+use App\Models\Vote\VoteModel;
 
 class User extends Authenticatable
 {
@@ -53,6 +54,8 @@ class User extends Authenticatable
         return $this->hasOne(Profile::class);
     }
 
-
+    public function vote(){
+        return $this->belongsTo(VoteModel::class);
+    }
 
 }

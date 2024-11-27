@@ -5,7 +5,9 @@ namespace App\Models\Answer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Question\Question;
+use App\Models\Vote\VoteModel;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class Answer extends Model
 {
@@ -16,7 +18,21 @@ class Answer extends Model
         return $this->belongsTo(Question::class);
     }
 
-    public function user(){
-        return $this->belongsTo(User::class);
+
+
+    public function votes(){
+        return $this->hasMany(VoteModel::class,'answer_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function userVote()
+    {
+        // A single user's vote on a specific answer
+        return $this->hasOne(VoteModel::class)->where('user_id', Auth::id());
+    }
+
 }

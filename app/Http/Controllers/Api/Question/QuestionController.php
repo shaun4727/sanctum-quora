@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Question\Question;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 
 class QuestionController extends Controller
@@ -47,8 +50,27 @@ class QuestionController extends Controller
 
 
     public function getAllQuestionsWthAnswers($space_id){
-        $questions = Question::with(['answers.user.profile'])
-                    ->whereJsonContains('space_id',intval($space_id))->get();
+        $questions = Question::with([
+            'answers.user.profile', // Eager load related users and their profiles for each answer
+            'answers' => function ($query) {
+                $query->withCount([
+                    'votes as upvotes_count' => function (Builder $query) {
+                        $query->where('vote_type', 'upvote'); // Count upvotes
+                    },
+                    'votes as downvotes_count' => function (Builder $query) {
+                        $query->where('vote_type', 'downvote'); // Count downvotes
+                    },
+                ])
+                ->with(['userVote' => function ($query) {
+                    $query->select('id', 'answer_id', 'vote_type') // Fetch only relevant fields
+                          ->where('user_id', Auth::id()); // Filter to the logged-in user's vote
+                }]);
+            }
+        ])
+        ->whereJsonContains('space_id', intval($space_id)) // Filter questions by space_id
+        ->get();
+        
+
 
         return response()->json([
             'response_code' => 200,
