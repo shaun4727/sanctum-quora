@@ -77,10 +77,46 @@ class QuestionController extends Controller
             'questions' => $questions
         ]);
     }
-    public function getSingleQuestionsWthAnswers($question_id,$answer_id){
+    public function getSingleQuestionsWthSingleAnswer($question_id,$answer_id){
         // function ($query) use ($answer_id, $question_id)
         $questions = Question::with(['answers' => function ($query) use ($answer_id) {
-            $query->where('id', $answer_id);
+            $query->where('id', $answer_id)
+            ->with(['userVote' => function ($query){
+                $query->select('id', 'answer_id', 'vote_type') // Fetch only relevant fields
+                          ->where('user_id', Auth::id()); // Filter to the logged-in user's vote
+            }])
+            ->withCount([
+                'votes as upvotes_count' => function (Builder $query) {
+                    $query->where('vote_type', 'upvote'); // Count upvotes
+                },
+                'votes as downvotes_count' => function (Builder $query) {
+                    $query->where('vote_type', 'downvote'); // Count downvotes
+                },
+            ]);
+        }, 'answers.user.profile'])
+        ->where('id', $question_id)
+        ->first();
+
+        return response()->json([
+            'response_code' => 200,
+            'questions' => $questions
+        ]);
+    }
+
+    public function getSingleQuestionWithAnswers($question_id){
+        $questions = Question::with(['answers' => function ($query) {
+            $query->with(['userVote' => function ($query){
+                $query->select('id', 'answer_id', 'vote_type') // Fetch only relevant fields
+                          ->where('user_id', Auth::id()); // Filter to the logged-in user's vote
+            }])
+            ->withCount([
+                'votes as upvotes_count' => function (Builder $query) {
+                    $query->where('vote_type', 'upvote'); // Count upvotes
+                },
+                'votes as downvotes_count' => function (Builder $query) {
+                    $query->where('vote_type', 'downvote'); // Count downvotes
+                },
+            ]);
         }, 'answers.user.profile'])
         ->where('id', $question_id)
         ->first();
@@ -92,7 +128,7 @@ class QuestionController extends Controller
     }
 
     public function getRelatedQuestion(Request $request){
-
+        
         $space_id = json_decode($request->query('space_id'),true);
         $question_id = $request->query('question_id');
         $questionList = Question::whereNotIn('id', [$question_id])->get();
