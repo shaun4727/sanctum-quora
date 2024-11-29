@@ -9,4 +9,9 @@ class Comment extends Model
 {
     use HasFactory;
     protected $guarded = [];
+
+    protected static function newFactory()
+    {
+        return \Database\Factories\CommentFactory::new();
+    }
 }

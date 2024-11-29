@@ -14,4 +14,10 @@ class Question extends Model
     public function answers(){
         return $this->hasMany(Answer::class);
     }
+
+    
+    protected static function newFactory()
+    {
+        return \Database\Factories\QuestionFactory::new();
+    }
 }

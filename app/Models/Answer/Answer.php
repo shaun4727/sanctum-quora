@@ -35,4 +35,9 @@ class Answer extends Model
         return $this->hasOne(VoteModel::class)->where('user_id', Auth::id());
     }
 
+    protected static function newFactory()
+    {
+        return \Database\Factories\AnswerFactory::new();
+    }
+
 }
