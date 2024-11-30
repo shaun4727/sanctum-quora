@@ -5,6 +5,7 @@ namespace App\Models\Answer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Question\Question;
+use App\Models\Comment\Comment;
 use App\Models\Vote\VoteModel;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -34,6 +35,11 @@ class Answer extends Model
         // A single user's vote on a specific answer
         return $this->hasOne(VoteModel::class)->where('user_id', Auth::id());
     }
+
+    public function comments(){
+        return $this->hasMany(Comment::class,'answer_id');
+    }
+
 
     protected static function newFactory()
     {

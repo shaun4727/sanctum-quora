@@ -30,6 +30,7 @@ class CommentFactory extends Factory
         return $this->state(function (array $attributes) use ($parentComment) {
             return [
                 'parent_id' => $parentComment->id,
+                'answer_id' => null, // Set answer_id to null for child comments
             ];
         });
     }

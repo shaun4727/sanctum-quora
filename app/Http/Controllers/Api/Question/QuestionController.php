@@ -64,11 +64,17 @@ class QuestionController extends Controller
                 ->with(['userVote' => function ($query) {
                     $query->select('id', 'answer_id', 'vote_type') // Fetch only relevant fields
                           ->where('user_id', Auth::id()); // Filter to the logged-in user's vote
+                }])
+                ->with(['comments' => function ($query) {
+                    $query->with(['childComments' => function ($query) {
+                        $query->with('childComments'); // Recursive eager loading of child comments
+                    }])->whereNull('parent_id');
                 }]);
             }
         ])
         ->whereJsonContains('space_id', intval($space_id)) // Filter questions by space_id
         ->get();
+        
         
 
 
