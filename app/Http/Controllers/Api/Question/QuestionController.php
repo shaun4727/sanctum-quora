@@ -50,6 +50,9 @@ class QuestionController extends Controller
 
 
     public function getAllQuestionsWthAnswers($space_id){
+
+        
+        
         $questions = Question::with([
             'answers.user.profile', // Eager load related users and their profiles for each answer
             'answers' => function ($query) {
@@ -66,14 +69,15 @@ class QuestionController extends Controller
                           ->where('user_id', Auth::id()); // Filter to the logged-in user's vote
                 }])
                 ->with(['comments' => function ($query) {
-                    $query->with(['childComments' => function ($query) {
-                        $query->with('childComments'); // Recursive eager loading of child comments
-                    }])->whereNull('parent_id');
+                    $query->with(['childComments', 'userCommented']) // Recursively fetch all child comments with userCommented
+                          ->whereNull('parent_id'); // Fetch only top-level comments
                 }]);
             }
         ])
         ->whereJsonContains('space_id', intval($space_id)) // Filter questions by space_id
         ->get();
+        
+        
         
         
 

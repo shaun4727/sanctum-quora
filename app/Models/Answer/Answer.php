@@ -15,6 +15,14 @@ class Answer extends Model
     use HasFactory;
     protected $guarded = [];
 
+    // Append the field to the model's array/JSON representation
+    protected $appends = ['show_comment'];
+
+    public function getShowCommentAttribute()
+    {
+        return false; // Default value
+    }
+
     public function question(){
         return $this->belongsTo(Question::class);
     }

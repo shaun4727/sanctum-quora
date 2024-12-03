@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Space\SpaceController;
 use App\Http\Controllers\Api\Question\QuestionController;
 use App\Http\Controllers\Api\Answer\AnswerController;
 use App\Http\Controllers\Api\Vote\VoteController;
+use App\Http\Controllers\Api\Comment\CommentController;
 use App\Events\NotificationProcessed;
 use App\Http\Controllers\Api\Notification\NotificationController;
 use App\Models\User;
@@ -55,6 +56,13 @@ Route::prefix('question')->group(function(){
     Route::get('/get-single-question-answers/{question_id}',[QuestionController::class,'getSingleQuestionWithAnswers'])->middleware('auth:sanctum');
     Route::get('/get-related-question',[QuestionController::class,'getRelatedQuestion'])->middleware('auth:sanctum');
 });
+
+
+Route::prefix('comment')->group(function(){
+    Route::post('/create-comment', [CommentController::class,'createComment'])->middleware('auth:sanctum');
+});
+
+
 
 
 Route::prefix('answer')->group(function(){
