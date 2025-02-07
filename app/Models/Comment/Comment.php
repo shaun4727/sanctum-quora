@@ -16,11 +16,16 @@ class Comment extends Model
         return $this->belongsTo(Answer::class, 'answer_id');
     }
 
-    protected $appends = ['is_depth_greater_than_one'];
+    protected $appends = ['is_depth_greater_than_one','view_reply'];
 
     public function getDepthAttribute()
     {
         return $this->calculateDepth();
+    }
+
+    public function getViewReplyAttribute()
+    {
+        return false;
     }
 
     public function calculateDepth()
